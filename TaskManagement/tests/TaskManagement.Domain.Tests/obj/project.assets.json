@@ -393,6 +393,16 @@
         "build": {
           "build/net8.0/xunit.runner.visualstudio.props": {}
         }
+      },
+      "TaskManagement.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/TaskManagement.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TaskManagement.Domain.dll": {}
+        }
       }
     }
   },
@@ -903,11 +913,17 @@
         "xunit.runner.visualstudio.3.1.4.nupkg.sha512",
         "xunit.runner.visualstudio.nuspec"
       ]
+    },
+    "TaskManagement.Domain/1.0.0": {
+      "type": "project",
+      "path": "../../src/TaskManagement.Domain/TaskManagement.Domain.csproj",
+      "msbuildProject": "../../src/TaskManagement.Domain/TaskManagement.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
       "Microsoft.NET.Test.Sdk >= 17.14.1",
+      "TaskManagement.Domain >= 1.0.0",
       "coverlet.collector >= 6.0.4",
       "xunit >= 2.9.3",
       "xunit.runner.visualstudio >= 3.1.4"
@@ -940,7 +956,11 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\personal project\\BE PROJECTS\\TaskManagement\\src\\TaskManagement.Domain\\TaskManagement.Domain.csproj": {
+              "projectPath": "D:\\personal project\\BE PROJECTS\\TaskManagement\\src\\TaskManagement.Domain\\TaskManagement.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
