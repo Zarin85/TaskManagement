@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.API.Endpoints;
+using TaskManagement.API.Infrastructure;
 using TaskManagement.Application;
 using TaskManagement.Infrastructure;
 using TaskManagement.Infrastructure.Persistence;
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -23,6 +26,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.MapTaskEndpoints();
