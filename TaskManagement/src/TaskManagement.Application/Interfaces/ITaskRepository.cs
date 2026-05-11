@@ -1,6 +1,6 @@
 using TaskManagement.Domain.Entities;
 
-namespace TaskManagement.Domain.Interfaces;
+namespace TaskManagement.Application.Interfaces;
 
 public interface ITaskRepository
 {

@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Interfaces;
 
@@ -7,17 +6,18 @@ namespace TaskManagement.Application.Features.Tasks.Queries.GetAllTasks;
 
 public class GetAllTasksQueryHandler : IRequestHandler<GetAllTasksQuery, List<TaskDto>>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly ITaskRepository _repository;
 
-    public GetAllTasksQueryHandler(IApplicationDbContext context)
+    public GetAllTasksQueryHandler(ITaskRepository repository)
     {
-        _context = context;
+        _repository = repository;
     }
 
     public async Task<List<TaskDto>> Handle(GetAllTasksQuery request, CancellationToken cancellationToken)
     {
-        return await _context.Tasks
-            .AsNoTracking()
+        var tasks = await _repository.GetAllAsync(cancellationToken);
+
+        return tasks
             .Select(t => new TaskDto(
                 t.Id,
                 t.Title,
@@ -27,6 +27,6 @@ public class GetAllTasksQueryHandler : IRequestHandler<GetAllTasksQuery, List<Ta
                 t.DueDate,
                 t.CreatedAt,
                 t.UpdatedAt))
-            .ToListAsync(cancellationToken);
+            .ToList();
     }
 }

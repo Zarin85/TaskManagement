@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using TaskManagement.Application.Interfaces;
 using TaskManagement.Domain.Entities;
-using TaskManagement.Domain.Interfaces;
 using TaskManagement.Infrastructure.Persistence;
 
 namespace TaskManagement.Infrastructure.Repositories;
@@ -21,17 +21,20 @@ public class TaskRepository : ITaskRepository
         => await _context.Tasks.AsNoTracking().ToListAsync(cancellationToken);
 
     public async Task AddAsync(TaskItem task, CancellationToken cancellationToken = default)
-        => await _context.Tasks.AddAsync(task, cancellationToken);
-
-    public Task UpdateAsync(TaskItem task, CancellationToken cancellationToken = default)
     {
-        _context.Tasks.Update(task);
-        return Task.CompletedTask;
+        await _context.Tasks.AddAsync(task, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public Task DeleteAsync(TaskItem task, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(TaskItem task, CancellationToken cancellationToken = default)
+    {
+        _context.Tasks.Update(task);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteAsync(TaskItem task, CancellationToken cancellationToken = default)
     {
         _context.Tasks.Remove(task);
-        return Task.CompletedTask;
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

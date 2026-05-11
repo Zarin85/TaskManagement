@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TaskManagement.Application.Interfaces;
-using TaskManagement.Domain.Interfaces;
 using TaskManagement.Infrastructure.Persistence;
 using TaskManagement.Infrastructure.Repositories;
 
@@ -17,7 +16,6 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<AppDbContext>());
         services.AddScoped<ITaskRepository, TaskRepository>();
 
         return services;
