@@ -1,10 +1,12 @@
 using MediatR;
+using TaskManagement.Application.Common.Exceptions;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Interfaces;
+using TaskManagement.Domain.Entities;
 
 namespace TaskManagement.Application.Features.Tasks.Queries.GetTaskById;
 
-public class GetTaskByIdQueryHandler : IRequestHandler<GetTaskByIdQuery, Result<TaskDto>>
+public class GetTaskByIdQueryHandler : IRequestHandler<GetTaskByIdQuery, TaskDto>
 {
     private readonly ITaskRepository _repository;
 
@@ -13,14 +15,12 @@ public class GetTaskByIdQueryHandler : IRequestHandler<GetTaskByIdQuery, Result<
         _repository = repository;
     }
 
-    public async Task<Result<TaskDto>> Handle(GetTaskByIdQuery request, CancellationToken cancellationToken)
+    public async Task<TaskDto> Handle(GetTaskByIdQuery request, CancellationToken cancellationToken)
     {
-        var task = await _repository.GetByIdAsync(request.Id, cancellationToken);
+        var task = await _repository.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new NotFoundException(nameof(TaskItem), request.Id);
 
-        if (task is null)
-            return Result<TaskDto>.Failure($"Task with id '{request.Id}' was not found.");
-
-        var dto = new TaskDto(
+        return new TaskDto(
             task.Id,
             task.Title,
             task.Description,
@@ -29,7 +29,5 @@ public class GetTaskByIdQueryHandler : IRequestHandler<GetTaskByIdQuery, Result<
             task.DueDate,
             task.CreatedAt,
             task.UpdatedAt);
-
-        return Result<TaskDto>.Success(dto);
     }
 }

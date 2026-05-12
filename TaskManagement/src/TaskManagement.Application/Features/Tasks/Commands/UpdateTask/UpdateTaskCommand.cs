@@ -10,4 +10,4 @@ public record UpdateTaskCommand(
     Priority Priority,
     TaskItemStatus Status,
     DateTime? DueDate
-) : IRequest<bool>;
+) : IRequest;

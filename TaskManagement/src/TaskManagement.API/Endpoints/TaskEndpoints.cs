@@ -5,6 +5,7 @@ using TaskManagement.Application.Features.Tasks.Commands.DeleteTask;
 using TaskManagement.Application.Features.Tasks.Commands.UpdateTask;
 using TaskManagement.Application.Features.Tasks.Queries.GetAllTasks;
 using TaskManagement.Application.Features.Tasks.Queries.GetTaskById;
+using TaskManagement.Domain.Enums;
 
 namespace TaskManagement.API.Endpoints;
 
@@ -32,18 +33,22 @@ public static class TaskEndpoints
             .Produces(StatusCodes.Status404NotFound);
     }
 
-    private static async Task<IResult> GetAllTasks(ISender sender, CancellationToken ct)
+    private static async Task<IResult> GetAllTasks(
+        ISender sender,
+        CancellationToken ct,
+        TaskItemStatus? status = null,
+        Priority? priority = null,
+        int pageNumber = 1,
+        int pageSize = 10)
     {
-        var tasks = await sender.Send(new GetAllTasksQuery(), ct);
-        return Results.Ok(tasks);
+        var result = await sender.Send(new GetAllTasksQuery(status, priority, pageNumber, pageSize), ct);
+        return Results.Ok(result);
     }
 
     private static async Task<IResult> GetTaskById(Guid id, ISender sender, CancellationToken ct)
     {
-        var result = await sender.Send(new GetTaskByIdQuery(id), ct);
-        return result.IsSuccess
-            ? Results.Ok(result.Value)
-            : Results.NotFound(result.Error);
+        var dto = await sender.Send(new GetTaskByIdQuery(id), ct);
+        return Results.Ok(dto);
     }
 
     private static async Task<IResult> CreateTask(
@@ -75,13 +80,13 @@ public static class TaskEndpoints
             request.Status,
             request.DueDate);
 
-        var success = await sender.Send(command, ct);
-        return success ? Results.NoContent() : Results.NotFound();
+        await sender.Send(command, ct);
+        return Results.NoContent();
     }
 
     private static async Task<IResult> DeleteTask(Guid id, ISender sender, CancellationToken ct)
     {
-        var success = await sender.Send(new DeleteTaskCommand(id), ct);
-        return success ? Results.NoContent() : Results.NotFound();
+        await sender.Send(new DeleteTaskCommand(id), ct);
+        return Results.NoContent();
     }
 }

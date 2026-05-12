@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using TaskManagement.Application.Common.Exceptions;
 
 namespace TaskManagement.API.Infrastructure;
 
@@ -34,6 +35,15 @@ public class GlobalExceptionHandler : IExceptionHandler
                 .ToDictionary(
                     g => g.Key,
                     g => g.Select(e => e.ErrorMessage).ToArray());
+        }
+        else if (exception is NotFoundException notFoundEx)
+        {
+            problem = new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Not found",
+                Detail = notFoundEx.Message
+            };
         }
         else if (exception is ArgumentException)
         {

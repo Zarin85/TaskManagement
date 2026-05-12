@@ -1,10 +1,11 @@
 using MediatR;
 using TaskManagement.Application.Common.Models;
+using TaskManagement.Application.Features.Tasks.Specifications;
 using TaskManagement.Application.Interfaces;
 
 namespace TaskManagement.Application.Features.Tasks.Queries.GetAllTasks;
 
-public class GetAllTasksQueryHandler : IRequestHandler<GetAllTasksQuery, List<TaskDto>>
+public class GetAllTasksQueryHandler : IRequestHandler<GetAllTasksQuery, PaginatedResult<TaskDto>>
 {
     private readonly ITaskRepository _repository;
 
@@ -13,11 +14,14 @@ public class GetAllTasksQueryHandler : IRequestHandler<GetAllTasksQuery, List<Ta
         _repository = repository;
     }
 
-    public async Task<List<TaskDto>> Handle(GetAllTasksQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<TaskDto>> Handle(GetAllTasksQuery request, CancellationToken cancellationToken)
     {
-        var tasks = await _repository.GetAllAsync(cancellationToken);
+        var spec = new TaskFilterSpecification(request.Status, request.Priority, request.PageNumber, request.PageSize);
 
-        return tasks
+        var tasks = await _repository.GetAllAsync(spec, cancellationToken);
+        var totalCount = await _repository.CountAsync(spec, cancellationToken);
+
+        var dtos = tasks
             .Select(t => new TaskDto(
                 t.Id,
                 t.Title,
@@ -28,5 +32,7 @@ public class GetAllTasksQueryHandler : IRequestHandler<GetAllTasksQuery, List<Ta
                 t.CreatedAt,
                 t.UpdatedAt))
             .ToList();
+
+        return new PaginatedResult<TaskDto>(dtos, totalCount, request.PageNumber, request.PageSize);
     }
 }
