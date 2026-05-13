@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
 using TaskManagement.API.Endpoints;
 using TaskManagement.API.Infrastructure;
 using TaskManagement.Application;
@@ -8,7 +7,8 @@ using TaskManagement.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -24,8 +24,8 @@ using (var scope = app.Services.CreateScope())
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseExceptionHandler();
